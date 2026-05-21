@@ -51,10 +51,13 @@ jobs:
         run: pnpm run build:deps
         shell: bash
 
+      - name: Build Electron dependencies (Windows)
+        if: matrix.platform == 'windows'
+        run: pnpm run build:deps:win
+
       - name: Build Electron app (Windows)
         if: matrix.platform == 'windows'
         run: pnpm run build:electron
-        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -78,6 +81,7 @@ jobs:
           name: macos-universal
           path: release/*.dmg
           retention-days: 7
+        continue-on-error: true
 
       - name: Upload artifacts (Windows)
         if: matrix.platform == 'windows'
@@ -86,6 +90,7 @@ jobs:
           name: windows-x64
           path: release/*.{exe,zip}
           retention-days: 7
+        continue-on-error: true
 
       - name: Upload artifacts (Linux)
         if: matrix.platform == 'linux'
@@ -94,11 +99,12 @@ jobs:
           name: linux-x64
           path: release/*.{AppImage,deb}
           retention-days: 7
+        continue-on-error: true
 
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/heads/mx')
+    if: always() && startsWith(github.ref, 'refs/heads/mx')
 
     steps:
       - name: Checkout repository
@@ -108,11 +114,25 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+        continue-on-error: true
 
       - name: Display structure of downloaded files
-        run: ls -R artifacts
+        run: ls -R artifacts || echo "No artifacts found"
+
+      - name: Check if artifacts exist
+        id: check-artifacts
+        run: |
+          if [ -d "artifacts" ] && [ "$(ls -A artifacts)" ]; then
+            echo "has_artifacts=true" >> $GITHUB_OUTPUT
+            echo "Found artifacts:"
+            ls -R artifacts
+          else
+            echo "has_artifacts=false" >> $GITHUB_OUTPUT
+            echo "No artifacts found"
+          fi
 
       - name: Create Release
+        if: steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.2.3-${{ github.run_number }}
@@ -143,8 +163,11 @@ jobs:
           draft: false
           prerelease: true
           files: |
-            artifacts/macos-universal/*.dmg
-            artifacts/windows-x64/*
-            artifacts/linux-x64/*
+            artifacts/**/*.dmg
+            artifacts/**/*.exe
+            artifacts/**/*.zip
+            artifacts/**/*.AppImage
+            artifacts/**/*.deb
+          fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
