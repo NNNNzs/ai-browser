@@ -45,3 +45,9 @@ pnpm run test
 
 - [页面路由系统](docs/design/pages/) — Next.js App Router 页面结构、路由设计、页面间关系与导航流
 - [进程通讯与 Agent 元素交互](docs/design/browser-communication/) — Electron IPC 架构、标签页管理、AI Agent DOM 标注与元素交互机制
+- [NPM 命令体系与构建工作流](docs/design/npm-scripts/) — 开发、构建、测试命令详解，Vite/Electron Builder 配置，开发工作流
+
+## 部署文档索引
+
+- [部署指南](docs/deployment/) — 多平台打包、CI/CD 自动构建、发布流程、故障排查
+- [GitHub Actions 配置](docs/deployment/github-actions.md) — 工作流详解、构建矩阵、平台配置

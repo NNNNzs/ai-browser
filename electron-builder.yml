@@ -10,6 +10,7 @@ files:
   - assets/**/*
   - dist/**/*
   - public/**/*
+  - resources/skills/**
   - server.js
   - electron-update.yml
   - next.config.js

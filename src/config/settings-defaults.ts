@@ -21,7 +21,7 @@ import {
  */
 export function getDefaultGeneralSettings(): GeneralSettings {
   return {
-    language: 'en',
+    language: 'zh',
     startup: {
       autoStart: false,
       startMinimized: false

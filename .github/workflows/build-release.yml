@@ -1,0 +1,150 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - mx
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        include:
+          - os: macos-latest
+            platform: mac
+            arch: universal
+          - os: windows-latest
+            platform: windows
+            arch: x64
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Next.js
+        run: pnpm run build:next
+
+      - name: Build Electron dependencies
+        run: pnpm run build:deps
+
+      - name: Build Electron app (Windows)
+        if: matrix.platform == 'windows'
+        run: pnpm run build:electron
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Electron app (macOS)
+        if: matrix.platform == 'mac'
+        run: pnpm run build:electron
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Build Electron app (Linux)
+        if: matrix.platform == 'linux'
+        run: pnpm run build:electron
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts (macOS)
+        if: matrix.platform == 'mac'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-universal
+          path: release/*.dmg
+          retention-days: 7
+
+      - name: Upload artifacts (Windows)
+        if: matrix.platform == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: release/*.{exe,zip}
+          retention-days: 7
+
+      - name: Upload artifacts (Linux)
+        if: matrix.platform == 'linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: release/*.{AppImage,deb}
+          retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/mx')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display structure of downloaded files
+        run: ls -R artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.2.3-${{ github.run_number }}
+          name: Release v0.2.3-${{ github.run_number }}
+          body: |
+            ## DeepFundAI Browser v0.2.3-${{ github.run_number }}
+
+            ### 支持平台
+            - **macOS**: Universal 二进制 (Intel + Apple Silicon)
+            - **Windows**: x64 架构
+            - **Linux**: x64 架构（兼容信创系统）
+
+            ### 安装说明
+            - macOS: 下载 .dmg 文件，拖拽到应用程序文件夹
+            - Windows: 下载 .exe 安装程序或 .zip 压缩包
+            - Linux: 下载 .AppImage 或 .deb 包
+
+            ### 信创平台支持
+            本版本在基于 Linux 的国产操作系统上进行了测试，包括：
+            - 麒麟操作系统
+            - 统信 UOS
+            - 其他基于 Debian 的国产 Linux 发行版
+
+            ### 系统要求
+            - macOS 11.0 或更高版本
+            - Windows 10 或更高版本
+            - Linux (x86_64)
+          draft: false
+          prerelease: true
+          files: |
+            artifacts/macos-universal/*.dmg
+            artifacts/windows-x64/*
+            artifacts/linux-x64/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
