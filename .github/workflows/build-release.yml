@@ -24,6 +24,9 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             arch: x64
+          - os: ubuntu-latest
+            platform: linux-arm
+            arch: arm64
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -101,11 +104,20 @@ jobs:
           retention-days: 7
         continue-on-error: true
 
-      - name: Upload artifacts (Linux)
-        if: matrix.platform == 'linux'
+      - name: Upload artifacts (Linux x64)
+        if: matrix.platform == 'linux' && matrix.arch == 'x64'
         uses: actions/upload-artifact@v4
         with:
           name: linux-x64
+          path: release/
+          retention-days: 7
+        continue-on-error: true
+
+      - name: Upload artifacts (Linux ARM64)
+        if: matrix.platform == 'linux-arm'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-arm64
           path: release/
           retention-days: 7
         continue-on-error: true
@@ -152,23 +164,33 @@ jobs:
             ### 支持平台
             - **macOS**: Universal 二进制 (Intel + Apple Silicon)
             - **Windows**: x64 架构
-            - **Linux**: x64 架构（兼容信创系统）
+            - **Linux**: x64 架构 + ARM64 架构（支持信创平台）
 
             ### 安装说明
             - macOS: 下载 .dmg 文件，拖拽到应用程序文件夹
             - Windows: 下载 .exe 安装程序或 .zip 压缩包
-            - Linux: 下载 .AppImage 或 .deb 包
+            - Linux x64: 下载 DeepFundAIBrowser-*-linux-x86_64.AppImage 或 .deb
+            - Linux ARM64: 下载 DeepFundAIBrowser-*-linux-arm64.AppImage 或 .deb
 
             ### 信创平台支持
-            本版本在基于 Linux 的国产操作系统上进行了测试，包括：
-            - 麒麟操作系统
-            - 统信 UOS
+            本版本提供 ARM64 架构支持，适用于以下国产操作系统：
+
+            **x86_64 架构**：
+            - 麒麟操作系统（x86 版本）
+            - 统信 UOS（x86 版本）
             - 其他基于 Debian 的国产 Linux 发行版
+
+            **ARM64 架构**：
+            - 鲲鹏处理器系统
+            - 飞腾处理器系统
+            - 麒麟操作系统（ARM 版本）
+            - 统信 UOS（ARM 版本）
 
             ### 系统要求
             - macOS 11.0 或更高版本
             - Windows 10 或更高版本
-            - Linux (x86_64)
+            - Linux x86_64/amd64
+            - Linux ARM64 (鲲鹏、飞腾等)
           draft: false
           prerelease: true
           files: |
