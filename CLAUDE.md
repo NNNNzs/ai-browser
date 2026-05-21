@@ -40,3 +40,8 @@ pnpm run test
 
 - [开发规范](docs/dev/CONVENTIONS.md) — 关键约定、环境变量、平台注意事项、Git 提交信息规范
 - [项目架构](docs/dev/architecture.md) — 多进程架构、构建系统、核心模块、AI Agent 架构、设置系统
+
+## 设计文档索引
+
+- [页面路由系统](docs/design/pages/) — Next.js App Router 页面结构、路由设计、页面间关系与导航流
+- [进程通讯与 Agent 元素交互](docs/design/browser-communication/) — Electron IPC 架构、标签页管理、AI Agent DOM 标注与元素交互机制
