@@ -1,0 +1,7 @@
+{
+  "i18n-ally.localesPaths": [
+    "src/locales",
+    "electron/main/i18n",
+    "electron/main/i18n/locales"
+  ]
+}

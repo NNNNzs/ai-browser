@@ -49,10 +49,12 @@ jobs:
 
       - name: Build Electron dependencies
         run: pnpm run build:deps
+        shell: bash
 
       - name: Build Electron app (Windows)
         if: matrix.platform == 'windows'
         run: pnpm run build:electron
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
