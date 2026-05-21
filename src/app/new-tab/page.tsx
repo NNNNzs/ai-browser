@@ -15,7 +15,7 @@ export default function NewTabPage() {
   const [query, setQuery] = useState("");
   const { settings } = useSettingsStore();
 
-  const searchEngine = settings?.general?.browser?.searchEngine || "google";
+  const searchEngine = settings?.general?.browser?.searchEngine || "baidu";
 
   const handleSearch = useCallback(() => {
     const url = buildNavigationUrl(query, searchEngine);

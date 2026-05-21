@@ -20,7 +20,7 @@ export default async function RootLayout({
   const theme = cookieStore.get('app-theme')?.value || 'dark';
   const fontSize = cookieStore.get('app-fontsize')?.value || '14';
   const density = cookieStore.get('app-density')?.value || 'comfortable';
-  const language = cookieStore.get('app-language')?.value || 'en';
+  const language = cookieStore.get('app-language')?.value || 'zh';
 
   const themeClass = theme === 'dark' || theme === 'system' ? 'dark' : 'light';
   const dataTheme = theme === 'system' ? 'dark' : theme;

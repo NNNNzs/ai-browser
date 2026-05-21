@@ -8,8 +8,8 @@ interface LanguageStore {
 const getInitialLanguage = () => {
   // On SSR, return placeholder (will be overridden on client)
   if (typeof window === 'undefined') {
-    console.log('[LANG_DEBUG] languageStore: SSR mode, returning placeholder en');
-    return 'en';
+    console.log('[LANG_DEBUG] languageStore: SSR mode, returning placeholder zh');
+    return 'zh';
   }
 
   // On client: Priority 1 - Read from window.__INITIAL_CONFIG__ (set by inline script)
@@ -29,7 +29,7 @@ const getInitialLanguage = () => {
   // Priority 3: Fallback to localStorage
   const stored = localStorage.getItem('i18nextLng');
   console.log('[LANG_DEBUG] languageStore: Fallback to localStorage:', stored);
-  return stored || 'en';
+  return stored || 'zh';
 };
 
 export const useLanguageStore = create<LanguageStore>((set) => ({

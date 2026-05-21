@@ -42,7 +42,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   const { tabs, activeTabId, switchTab, closeTab, createTab, navigateTo, refresh, goBack, goForward } = useTabManager();
   const { settings } = useSettingsStore();
 
-  const searchEngine = settings?.general?.browser?.searchEngine || 'google';
+  const searchEngine = settings?.general?.browser?.searchEngine || 'baidu';
 
   // Get current tab's URL, fallback to prop currentUrl
   const activeTab = tabs.find(tab => tab.tabId === activeTabId);

@@ -29,7 +29,7 @@ export default function TranslationsProvider({
     instance.use(initReactI18next).init({
       lng: locale,
       resources,
-      fallbackLng: 'en',
+      fallbackLng: 'zh',
       defaultNS: 'common',
       interpolation: {
         escapeValue: false,

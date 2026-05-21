@@ -31,7 +31,7 @@ export function getDefaultGeneralSettings(): GeneralSettings {
       closeToTray: true
     },
     browser: {
-      searchEngine: 'google'
+      searchEngine: 'baidu'
     }
   };
 }
