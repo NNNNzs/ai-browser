@@ -11,10 +11,8 @@
 !.yarn/versions
 
 # project config
-/.claude
 /requirements-pool
 .npmrc
-CLAUDE.md
 /certificates
 .env.local
 .env.production
