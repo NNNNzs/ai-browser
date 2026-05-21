@@ -47,13 +47,22 @@ jobs:
       - name: Build Next.js
         run: pnpm run build:next
 
-      - name: Build Electron dependencies
+      - name: Build Electron dependencies (Unix)
+        if: matrix.platform != 'windows'
         run: pnpm run build:deps
         shell: bash
 
       - name: Build Electron dependencies (Windows)
         if: matrix.platform == 'windows'
-        run: pnpm run build:deps:win
+        shell: pwsh
+        run: |
+          $env:ENTRY="index"
+          pnpm exec vite build --config electron/preload/vite.config.ts
+          $env:ENTRY="view"
+          pnpm exec vite build --config electron/preload/vite.config.ts
+          $env:ENTRY="modal"
+          pnpm exec vite build --config electron/preload/vite.config.ts
+          pnpm exec vite build --config electron/main/vite.config.ts
 
       - name: Build Electron app (Windows)
         if: matrix.platform == 'windows'
