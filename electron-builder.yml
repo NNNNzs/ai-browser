@@ -44,14 +44,14 @@ win:
     - nsis
     - zip
   signDlls: false
-  artifactName: ${name}-${version}-${os}-${arch}.${ext}
+  artifactName: ${productName}-${version}-${os}-${arch}.${ext}
 
 linux:
   icon: assets/icons/icon.png
   target:
     - AppImage
     - deb
-  artifactName: ${name}-${version}-${os}-${arch}.${ext}
+  artifactName: ${productName}-${version}-${os}-${arch}.${ext}
   category: Development
 
 nsis:
@@ -60,7 +60,7 @@ nsis:
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: ${productName}
-  artifactName: ${name}-${version}-${os}-${arch}-setup.${ext}
+  artifactName: ${productName}-${version}-${os}-${arch}-setup.${ext}
 
 npmRebuild: false
 
