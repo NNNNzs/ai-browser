@@ -85,6 +85,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install fpm (Linux ARM64)
+        if: matrix.platform == 'linux-arm'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby ruby-dev build-essential
+          sudo gem install --no-document fpm
+
       - name: Build Electron app (Linux ARM64)
         if: matrix.platform == 'linux-arm'
         run: pnpm exec electron-builder --linux --arm64
