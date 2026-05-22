@@ -13,7 +13,6 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
         include:
           - os: macos-latest
             platform: mac
@@ -24,7 +23,7 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             arch: x64
-          - os: ubuntu-latest
+          - os: ubuntu-24.04-arm
             platform: linux-arm
             arch: arm64
       fail-fast: false
@@ -80,9 +79,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
-      - name: Build Electron app (Linux)
+      - name: Build Electron app (Linux x64)
         if: matrix.platform == 'linux'
-        run: pnpm run build:electron
+        run: pnpm exec electron-builder --linux --x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Electron app (Linux ARM64)
+        if: matrix.platform == 'linux-arm'
+        run: pnpm exec electron-builder --linux --arm64
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -195,8 +200,8 @@ jobs:
           prerelease: true
           files: |
             artifacts/**/*.dmg
-            artifacts/**/*.exe
-            artifacts/**/*.zip
+            artifacts/**/*setup.exe
+            artifacts/**/*-win-*.zip
             artifacts/**/*.AppImage
             artifacts/**/*.deb
           fail_on_unmatched_files: false
